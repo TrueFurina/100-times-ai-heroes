@@ -28,6 +28,10 @@ import ollama
 from dotenv import load_dotenv
 
 
+class SeedDataError(Exception):
+    """seed CSV の不備を、原因・ファイル・修正方法とともに報告する例外。"""
+
+
 # =============================================================================
 # Configuration
 # =============================================================================
@@ -226,6 +230,51 @@ class LocalStorage:
                     for value in default_seeds[key]:
                         writer.writerow([value])
 
+        # 全 seed ファイルを検証（存在しない場合は上で作成済み）
+        for key, seed_file in self.seed_files.items():
+            self._validate_seed_file(key, seed_file)
+
+    def _validate_seed_file(self, key: str, seed_file: Path) -> None:
+        """seed CSV の形式を検証し、不備があれば SeedDataError を投げる。
+
+        仕様: UTF-8・1列のみ・1行目が必須ヘッダー・データ行は空でない。
+        """
+        if not seed_file.exists():
+            raise SeedDataError(
+                f"SeedDataError: seed file not found: {seed_file} — "
+                f"expected header '{key}'. Delete the file or restore it, "
+                f"then rerun to regenerate from defaults."
+            )
+        with open(seed_file, "r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+        if not rows:
+            raise SeedDataError(
+                f"SeedDataError: seed file is empty: {seed_file} — "
+                f"expected header '{key}' followed by at least one value."
+            )
+        header = rows[0]
+        if not header or header[0].strip() != key:
+            raise SeedDataError(
+                f"SeedDataError: invalid header in {seed_file} — "
+                f"expected '{key}', got {header[:1]!r}. Fix the first line."
+            )
+        valid_rows = 0
+        for row in rows[1:]:
+            if len(row) > 1:
+                raise SeedDataError(
+                    f"SeedDataError: multi-column row in {seed_file}: {row!r} — "
+                    f"each data row must be a single column. Quote values "
+                    f"containing commas."
+                )
+            if row and row[0].strip():
+                valid_rows += 1
+        if valid_rows == 0:
+            raise SeedDataError(
+                f"SeedDataError: no valid values in {seed_file} — "
+                f"add at least one non-empty value under the '{key}' header."
+            )
+
     def _init_output_file(self) -> None:
         """出力ファイルのヘッダーを書き込む"""
         headers = [
@@ -246,16 +295,22 @@ class LocalStorage:
             writer.writerow(headers)
 
     def _read_seed_values(self, seed_file: Path) -> list:
-        """シードファイルから値を読み込む"""
+        """シードファイルから値を読み込む（検証済みの形式を前提とする）"""
         with open(seed_file, "r", encoding="utf-8") as f:
             reader = csv.reader(f)
             next(reader)  # ヘッダースキップ
-            return [row[0] for row in reader if row]
+            return [row[0].strip() for row in reader if row and row[0].strip()]
 
     def get_random_attribute(self, attr_type: str) -> str:
         """ランダムに属性を取得"""
         seed_file = self.seed_files[attr_type]
+        self._validate_seed_file(attr_type, seed_file)
         values = self._read_seed_values(seed_file)
+        if not values:
+            raise SeedDataError(
+                f"SeedDataError: no values available in {seed_file} — "
+                f"add at least one non-empty value under the '{attr_type}' header."
+            )
         return random.choice(values)
 
     def append_output(self, row: list) -> None:
@@ -265,11 +320,16 @@ class LocalStorage:
             writer.writerow(row)
 
     def append_seed(self, attr_type: str, value: str) -> None:
-        """シードデータに新しい値を追加"""
+        """シードデータに新しい値を追加（空値は SeedDataError）"""
+        if value is None or not str(value).strip():
+            raise SeedDataError(
+                f"SeedDataError: cannot append an empty value to seed '{attr_type}' — "
+                f"provide a non-empty string."
+            )
         seed_file = self.seed_files[attr_type]
         with open(seed_file, "a", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow([value])
+            writer.writerow([str(value).strip()])
 
 
 # =============================================================================
