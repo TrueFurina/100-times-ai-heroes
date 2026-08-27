@@ -89,3 +89,45 @@ SESSION: 2026-02-11 - Core Implementation
 - [ ] E2E統合テスト実行
 
 ================================================================================
+SESSION: 2026-08-27 - Local-only implementation
+================================================================================
+
+## 完了したタスク
+- [x] Google Sheets依存を実行経路から除外し、ローカルCSVを正式仕様に変更
+- [x] Ollamaモデルの自動pullを廃止
+- [x] seed CSVのヘッダー・空値・列数を検証
+- [x] 生成失敗時のerrors.jsonl記録と既存結果保持を追加
+- [x] ComfyUI localhost APIによるローカル画像生成を追加
+- [x] Ollama既定・OpenAI任意のLLMプロバイダー切り替えを追加
+- [x] 外部サービスへ接続しない自動テストを追加
+- [x] ローカル版のREADME・設計書・初期化スクリプトを更新
+
+## テスト結果
+- `.venv/bin/pytest -q`: 19 passed
+
+## 実行メモ
+- テキストのみ: `python ollama_hero_gen.py --iterations 1`
+- テキスト + ローカル画像: `python ollama_hero_gen.py --iterations 1 --generate-images`
+- 任意のOpenAI: `python ollama_hero_gen.py --provider openai --iterations 1`
+
+SESSION: 2026-08-27 - Image model comparison
+================================================================================
+
+## 完了したタスク
+- [x] 画像モデルをprofile化（Animagine、Illustrious、Pony、NoobAI）
+- [x] profileごとのprompt形式・解像度・steps・CFG・samplerを定義
+- [x] Ponyのclip skipをComfyUI workflowへ反映
+- [x] 固定case・固定seedの比較ベンチマークを追加
+- [x] macOS/Linuxの空きメモリ計測と画像生成前のメモリ安全弁を追加
+- [x] Issue #10を単一モデル実装から比較検証仕様へ更新
+
+## テスト結果
+- `.venv/bin/pytest -q`: 22 passed
+- `tools/benchmark_image_models.py --dry-run`: 4 profileのprompt生成を確認
+- ComfyUI未起動時: connection-errorをreport.jsonへ記録できることを確認
+
+## 未実施
+- 実ComfyUIでの4モデル画像比較（モデル未導入・サーバー未起動）
+- M4 Max上の実画像生成ピークメモリ測定
+
+================================================================================

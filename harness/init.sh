@@ -30,13 +30,14 @@ if ! curl -s http://localhost:11434/api/tags > /dev/null 2>&1; then
 fi
 echo "  OK: Ollama server running"
 
-# 3. モデル確認
+# 3. モデル確認（自動ダウンロードはしない）
 echo ""
-echo "[3/6] Checking model (gpt-oss-20b)..."
-MODEL="gpt-oss-20b"
+echo "[3/6] Checking model (gpt-oss:20b)..."
+MODEL="gpt-oss:20b"
 if ! ollama list | grep -q "$MODEL"; then
-    echo "  Pulling $MODEL (this may take a while)..."
-    ollama pull "$MODEL"
+    echo "ERROR: $MODEL is not installed."
+    echo "Run this once while online: ollama pull $MODEL"
+    exit 1
 fi
 echo "  OK: $MODEL available"
 
@@ -65,22 +66,10 @@ echo ""
 echo "[6/6] Checking configuration..."
 if [ ! -f ".env" ]; then
     echo "  Creating .env from template..."
-    cat > .env << 'EOF'
-OLLAMA_MODEL=gpt-oss-20b
-OLLAMA_HOST=http://localhost:11434
-SHEET_URL=<your-spreadsheet-url>
-CREDENTIALS_PATH=./credentials.json
-EOF
-    echo "  WARNING: Edit .env and set SHEET_URL"
+    cp .env.example .env
+    echo "  OK: .env created from .env.example"
 else
     echo "  OK: .env exists"
-fi
-
-if [ ! -f "credentials.json" ]; then
-    echo "  WARNING: credentials.json not found"
-    echo "  See docs/DESIGN_SPEC_OLLAMA.md section 7.3 for setup"
-else
-    echo "  OK: credentials.json exists"
 fi
 
 # 完了
@@ -90,7 +79,7 @@ echo "Setup complete!"
 echo "======================================"
 echo ""
 echo "Next steps:"
-echo "  1. Edit .env and set SHEET_URL"
-echo "  2. Add credentials.json (Google service account)"
-echo "  3. Run: python3 ollama_hero_gen.py"
+echo "  1. Review .env (Google Sheets credentials are not required)"
+echo "  2. Run: python3 ollama_hero_gen.py --iterations 1"
+echo "  3. For local images, configure ComfyUI and use --generate-images"
 echo ""

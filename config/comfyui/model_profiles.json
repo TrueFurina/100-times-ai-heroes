@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "generic-sdxl": {
+      "checkpoint_name": "CHANGE_ME.safetensors",
+      "prompt_style": "prose",
+      "width": 768,
+      "height": 1152,
+      "steps": 24,
+      "cfg": 7.0,
+      "sampler": "euler",
+      "scheduler": "normal",
+      "negative_prompt": "low quality, blurry, bad anatomy, bad hands, extra fingers, cropped, duplicate, text, watermark, signature",
+      "notes": "既存の汎用workflow互換用。"
+    },
+    "animagine-xl-4.0-opt": {
+      "checkpoint_name": "animagine-xl-4.0-opt.safetensors",
+      "prompt_style": "animagine",
+      "width": 832,
+      "height": 1216,
+      "steps": 28,
+      "cfg": 5.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "negative_prompt": "lowres, bad anatomy, bad hands, text, error, missing finger, extra digits, fewer digits, cropped, worst quality, low quality, low score, bad score, average score, signature, watermark, username, blurry",
+      "notes": "アニメ・JRPG系の第一比較候補。",
+      "source_url": "https://huggingface.co/cagliostrolab/animagine-xl-4.0",
+      "license_name": "CreativeML Open RAIL++-M"
+    },
+    "illustrious-xl-v2": {
+      "checkpoint_name": "Illustrious-XL-v2.0.safetensors",
+      "prompt_style": "illustrious",
+      "width": 832,
+      "height": 1216,
+      "steps": 30,
+      "cfg": 7.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "negative_prompt": "low quality, blurry, bad anatomy, bad hands, extra fingers, cropped, duplicate, text, watermark, signature",
+      "notes": "線と色を重視するイラスト寄りの比較候補。",
+      "source_url": "https://huggingface.co/OnomaAIResearch/Illustrious-XL-v2.0",
+      "license_name": "CreativeML Open RAIL-M"
+    },
+    "pony-v6-xl": {
+      "checkpoint_name": "ponyDiffusionV6XL_v6StartWithThisOne.safetensors",
+      "prompt_style": "pony",
+      "width": 832,
+      "height": 1216,
+      "steps": 25,
+      "cfg": 7.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "negative_prompt": "low quality, blurry, bad anatomy, bad hands, extra fingers, cropped, duplicate, text, watermark, signature",
+      "clip_skip": -2,
+      "experimental": true,
+      "notes": "獣人・異種族には有力。clip skip 2とライセンス条件を確認する。",
+      "source_url": "https://huggingface.co/LyliaEngine/Pony_Diffusion_V6_XL",
+      "license_name": "Modified Fair AI Public License 1.0-SD"
+    },
+    "noobai-xl-1.1": {
+      "checkpoint_name": "NoobAI-XL-v1.1.safetensors",
+      "prompt_style": "noobai",
+      "width": 832,
+      "height": 1216,
+      "steps": 28,
+      "cfg": 5.0,
+      "sampler": "euler_ancestral",
+      "scheduler": "normal",
+      "negative_prompt": "low quality, blurry, bad anatomy, bad hands, extra fingers, cropped, duplicate, text, watermark, signature",
+      "experimental": true,
+      "notes": "品質候補。利用条件とComfyUI固有設定を検証してから採用する。",
+      "source_url": "https://huggingface.co/Laxhar/noobai-XL-1.1",
+      "license_name": "Fair AI Public License 1.0-SD"
+    }
+  }
+}

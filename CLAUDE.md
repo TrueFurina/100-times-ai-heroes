@@ -35,7 +35,13 @@ python harness/test_harness.py
 ## ファイル構成
 
 ```
-ollama_hero_gen.py      # メイン実装（単一ファイル）
+ollama_hero_gen.py      # 生成パイプライン、CSV、LLMプロバイダー
+comfyui_image_gen.py    # localhost ComfyUI APIクライアント
+image_model_profiles.py # 画像モデルprofileとprompt形式
+memory_safety.py        # macOS/Linuxのメモリ安全弁
+tools/benchmark_image_models.py # 候補モデル比較ベンチマーク
+config/comfyui/         # ComfyUI API workflow
+requirements-cloud.txt  # 任意のOpenAIプロバイダー用依存関係
 harness/
 ├── features.json       # 機能リスト（passes を更新）
 ├── claude-progress.txt # 進捗ログ（セッション終了時に追記）
@@ -45,9 +51,11 @@ harness/
 ```
 
 ## 技術スタック
-- Python 3.10+
+- Python 3.9+
 - Ollama (gpt-oss-20b)
-- Google Sheets API (サービスアカウント認証)
+- ローカルCSV
+- ComfyUI（画像生成時のみ、localhost）
+- OpenAI Responses API（任意、明示指定時のみ）
 - M4 MacBook Pro (128GB)
 
 ## 設計仕様
